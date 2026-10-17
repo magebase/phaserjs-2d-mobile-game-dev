@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Validate Skills and Internal Links
+        run: |
+          python3 scripts/validate-skills.py
+
+      - name: Validate Capability Registry & Playbooks
+        run: |
+          python3 scripts/validate-registry.py
+
+      - name: Verify Upstream Reference Skills
+        run: |
+          chmod +x upstream/sync-phaser-skills.sh
+          ./upstream/sync-phaser-skills.sh --check
+
+      - name: Run Evaluation Test Suites
+        run: |
+          chmod +x evals/*.py
+          python3 scripts/run-evals.py
+
+      - name: Test Executable Tools on Fixtures
+        run: |
+          chmod +x tools/*
+          ./tools/magebase-game probe fixtures/minimal-phaser4-game -o fixtures/minimal-phaser4-game/game-profile.json
+          ./tools/magebase-game audit fixtures/asset-library-sample -o fixtures/asset-library-sample/asset-catalog.json
+          ./tools/magebase-game report fixtures/minimal-phaser4-game -o fixtures/minimal-phaser4-game/GAME_QUALITY.md

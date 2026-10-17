@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-10-17T11:35:35.836714+00:00",
+  "total_files": 4,
+  "total_bytes": 386,
+  "items": [
+    {
+      "path": "public/assets/player.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 86,
+      "sha256": "c39cd449fbd846c5b8cbc8ae01471dd1d402b994736b7c49dd14a150f7ccf123",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [],
+      "dimensions": {
+        "width": 16,
+        "height": 16,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "public/assets/tileset.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 107,
+      "sha256": "935f33cb4b144d0954d4a1a5a66383ebfa234813d6fe53cf3f3c1008bca75053",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [],
+      "dimensions": {
+        "width": 32,
+        "height": 32,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "public/assets/player.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 86,
+      "sha256": "c39cd449fbd846c5b8cbc8ae01471dd1d402b994736b7c49dd14a150f7ccf123",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [
+        "duplicate_of:public/assets/player.png"
+      ],
+      "dimensions": {
+        "width": 16,
+        "height": 16,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "public/assets/tileset.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 107,
+      "sha256": "935f33cb4b144d0954d4a1a5a66383ebfa234813d6fe53cf3f3c1008bca75053",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [
+        "duplicate_of:public/assets/tileset.png"
+      ],
+      "dimensions": {
+        "width": 32,
+        "height": 32,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    }
+  ],
+  "summary": {
+    "images_count": 4,
+    "audio_count": 0,
+    "atlases_count": 0,
+    "fonts_count": 0,
+    "tilemaps_count": 0,
+    "defect_count": 2
+  }
+}

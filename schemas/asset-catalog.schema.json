@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://magebase.dev/schemas/asset-catalog.schema.json",
+  "title": "AssetCatalog",
+  "description": "Standardized schema for game visual and audio asset inventory and defect detection.",
+  "type": "object",
+  "required": ["generated_at", "total_files", "total_bytes", "items", "summary"],
+  "properties": {
+    "generated_at": { "type": "string" },
+    "total_files": { "type": "integer" },
+    "total_bytes": { "type": "integer" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "type", "format", "size_bytes", "sha256"],
+        "properties": {
+          "path": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["image", "spritesheet", "atlas", "audio", "font", "tilemap", "json", "other"]
+          },
+          "format": { "type": "string" },
+          "size_bytes": { "type": "integer" },
+          "sha256": { "type": "string" },
+          "dimensions": {
+            "type": "object",
+            "properties": {
+              "width": { "type": "integer" },
+              "height": { "type": "integer" },
+              "is_power_of_two": { "type": "boolean" }
+            }
+          },
+          "sheet_metadata": {
+            "type": "object",
+            "properties": {
+              "frame_width": { "type": "integer" },
+              "frame_height": { "type": "integer" },
+              "total_frames": { "type": "integer" },
+              "margin": { "type": "integer", "default": 0 },
+              "spacing": { "type": "integer", "default": 0 }
+            }
+          },
+          "alpha_channel": { "type": "boolean" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "detected_style": { "type": "string" },
+          "referenced_in_scenes": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "defects": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["images_count", "audio_count", "atlases_count", "defect_count"],
+      "properties": {
+        "images_count": { "type": "integer" },
+        "audio_count": { "type": "integer" },
+        "atlases_count": { "type": "integer" },
+        "fonts_count": { "type": "integer", "default": 0 },
+        "tilemaps_count": { "type": "integer", "default": 0 },
+        "defect_count": { "type": "integer" }
+      }
+    }
+  }
+}

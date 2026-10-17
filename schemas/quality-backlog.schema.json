@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://magebase.dev/schemas/quality-backlog.schema.json",
+  "title": "QualityBacklog",
+  "description": "Standardized schema for prioritized game improvement tasks and release blockers.",
+  "type": "object",
+  "required": ["game_slug", "updated_at", "tasks"],
+  "properties": {
+    "game_slug": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "category",
+          "capability_id",
+          "is_blocker",
+          "impact",
+          "confidence",
+          "effort",
+          "priority_score",
+          "status",
+          "playbook"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["lifecycle", "phaser4", "game-quality", "art-pipeline", "backend", "qa"]
+          },
+          "capability_id": { "type": "string" },
+          "is_blocker": { "type": "boolean" },
+          "blocker_id": { "type": ["string", "null"] },
+          "impact": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "confidence": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "effort": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "priority_score": { "type": "number" },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "completed", "blocked", "deferred"]
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "playbook": { "type": "string" },
+          "verification_command": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

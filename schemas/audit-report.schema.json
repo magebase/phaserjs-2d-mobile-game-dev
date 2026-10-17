@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://magebase.dev/schemas/audit-report.schema.json",
+  "title": "AuditReport",
+  "description": "Standardized schema for game audit evaluation and release blocker reporting.",
+  "type": "object",
+  "required": [
+    "generated_at",
+    "game_name",
+    "overall_status",
+    "release_tier_achieved",
+    "hard_blockers",
+    "dimension_scores",
+    "average_score",
+    "findings"
+  ],
+  "properties": {
+    "generated_at": { "type": "string" },
+    "game_name": { "type": "string" },
+    "overall_status": {
+      "type": "string",
+      "enum": ["PASSED", "WARNING", "BLOCKED"]
+    },
+    "release_tier_achieved": {
+      "type": "string",
+      "enum": ["NONE", "ALPHA", "BETA", "GOLD"]
+    },
+    "hard_blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "status", "evidence"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "UNVERIFIED"]
+          },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "dimension_scores": {
+      "type": "object",
+      "required": [
+        "fun_core_loop",
+        "mobile_usability",
+        "game_feel_juice",
+        "art_cohesion",
+        "audio_feedback",
+        "technical_stability",
+        "load_performance",
+        "release_readiness"
+      ],
+      "properties": {
+        "fun_core_loop": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "mobile_usability": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "game_feel_juice": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "art_cohesion": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "audio_feedback": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "technical_stability": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "load_performance": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        },
+        "release_readiness": {
+          "type": "object",
+          "required": ["score", "notes"],
+          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+        }
+      }
+    },
+    "average_score": { "type": "number" },
+    "lowest_dimension": { "type": "string" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "title", "details", "suggested_action"],
+        "properties": {
+          "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "category": { "type": "string" },
+          "title": { "type": "string" },
+          "details": { "type": "string" },
+          "suggested_action": { "type": "string" }
+        }
+      }
+    },
+    "recommended_next_step": { "type": "string" }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "generated_at": "2026-10-17T11:33:22.645437+00:00",
+  "total_files": 5,
+  "total_bytes": 584,
+  "items": [
+    {
+      "path": "sprites/enemy_npot.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 124,
+      "sha256": "0d0d0bef14c790d4e21e1b02adc5c444b49deca85700a827a6fad5f347f9b386",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [],
+      "dimensions": {
+        "width": 45,
+        "height": 33,
+        "is_power_of_two": false
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "sprites/hero_duplicate.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 108,
+      "sha256": "4e07aa0d748e5686ba276bb9e8c8bd880b2e3e7bca034c05befcce808d81d34b",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [],
+      "dimensions": {
+        "width": 32,
+        "height": 32,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "sprites/hero.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 108,
+      "sha256": "4e07aa0d748e5686ba276bb9e8c8bd880b2e3e7bca034c05befcce808d81d34b",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [
+        "duplicate_of:sprites/hero_duplicate.png"
+      ],
+      "dimensions": {
+        "width": 32,
+        "height": 32,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "tiles/dungeon_tiles.png",
+      "type": "image",
+      "format": "png",
+      "size_bytes": 210,
+      "sha256": "b044c665d6db35820ff08be1789258161a96fdd4de17f9197b2c7e53ff3930a0",
+      "tags": [
+        "image",
+        "png"
+      ],
+      "defects": [],
+      "dimensions": {
+        "width": 64,
+        "height": 64,
+        "is_power_of_two": true
+      },
+      "alpha_channel": true
+    },
+    {
+      "path": "audio/pickup.ogg",
+      "type": "audio",
+      "format": "ogg",
+      "size_bytes": 34,
+      "sha256": "8f220e597d7ddf0579421b6f2bc1f2fe7d586b4289b66e46061e75847a08ad83",
+      "tags": [
+        "audio",
+        "ogg"
+      ],
+      "defects": []
+    }
+  ],
+  "summary": {
+    "images_count": 4,
+    "audio_count": 1,
+    "atlases_count": 0,
+    "fonts_count": 0,
+    "tilemaps_count": 0,
+    "defect_count": 1
+  }
+}

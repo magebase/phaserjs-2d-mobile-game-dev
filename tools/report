@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""CLI utility to evaluate game quality against the Definition of Done and generate reports."""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+# Add repo root to python path
+repo_root = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(repo_root))
+
+from tools.lib.asset_analyzer import analyze_assets
+from tools.lib.common import load_json, save_json, validate_schema
+from tools.lib.probe import probe_project
+from tools.lib.reporter import generate_report, render_markdown_report
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Evaluate game against the Quality Contract")
+    parser.add_argument("path", nargs="?", default=".", help="Root directory of the game project")
+    parser.add_argument("--profile", default=None, help="Path to existing game-profile.json")
+    parser.add_argument("--catalog", default=None, help="Path to existing asset-catalog.json")
+    parser.add_argument("--json-out", default="audit-report.json", help="Path for JSON report output")
+    parser.add_argument("-o", "--output", default="GAME_QUALITY.md", help="Path for Markdown report output")
+    args = parser.parse_args()
+
+    target = Path(args.path).resolve()
+    if not target.is_dir():
+        print(f"Error: Target path '{target}' is not a directory", file=sys.stderr)
+        sys.exit(1)
+
+    # Load or generate profile
+    if args.profile and Path(args.profile).exists():
+        profile = load_json(Path(args.profile))
+    elif (target / "game-profile.json").exists():
+        profile = load_json(target / "game-profile.json")
+    else:
+        print("Probing project structure...")
+        profile = probe_project(target)
+
+    # Load or generate catalog
+    if args.catalog and Path(args.catalog).exists():
+        catalog = load_json(Path(args.catalog))
+    elif (target / "asset-catalog.json").exists():
+        catalog = load_json(target / "asset-catalog.json")
+    else:
+        print("Auditing assets...")
+        catalog = analyze_assets(target)
+
+    print("Evaluating against GAME_QUALITY_CONTRACT.md...")
+    report = generate_report(profile, catalog)
+
+    # Save JSON report
+    json_path = Path(args.json_out)
+    if not json_path.is_absolute():
+        json_path = target / json_path
+    save_json(report, json_path)
+    print(f"JSON audit report written to: {json_path}")
+
+    # Validate JSON report against schema
+    schema_file = repo_root / "schemas" / "audit-report.schema.json"
+    if schema_file.exists():
+        valid, err = validate_schema(report, schema_file)
+        if not valid:
+            print(f"Warning: Audit report schema validation error: {err}", file=sys.stderr)
+        else:
+            print("Audit report matches schema successfully.")
+
+    # Save Markdown report
+    md_content = render_markdown_report(report)
+    md_path = Path(args.output)
+    if not md_path.is_absolute():
+        md_path = target / md_path
+    md_path.write_text(md_content, encoding="utf-8")
+    print(f"Markdown quality tracker written to: {md_path}")
+
+    # Print summary
+    print(f"\n================ AUDIT SUMMARY ================")
+    print(f"Overall Status: {report['overall_status']}")
+    print(f"Release Tier:   {report['release_tier_achieved']}")
+    print(f"Quality Score:  {report['average_score']} / 10.0")
+    print(f"Next Action:    {report['recommended_next_step']}")
+    print(f"===============================================\n")
+
+
+if __name__ == "__main__":
+    main()

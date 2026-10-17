@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+"""CLI utility to probe and profile a Phaser 4 game project."""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+# Add repo root to python path
+repo_root = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(repo_root))
+
+from tools.lib.common import save_json, validate_schema
+from tools.lib.probe import probe_project
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Probe a Phaser 4 game project and generate game-profile.json")
+    parser.add_argument("path", nargs="?", default=".", help="Root directory of the game project")
+    parser.add_argument("-o", "--output", default="game-profile.json", help="Output path for game-profile.json")
+    parser.add_argument("--validate", action="store_true", default=True, help="Validate against schema")
+    args = parser.parse_args()
+
+    target = Path(args.path).resolve()
+    if not target.is_dir():
+        print(f"Error: Target path '{target}' is not a directory", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Probing Phaser game project at: {target}...")
+    profile = probe_project(target)
+
+    out_file = Path(args.output)
+    if not out_file.is_absolute():
+        out_file = target / out_file
+
+    save_json(profile, out_file)
+    print(f"Game profile written to: {out_file}")
+
+    if args.validate:
+        schema_file = repo_root / "schemas" / "game-profile.schema.json"
+        if schema_file.exists():
+            valid, err = validate_schema(profile, schema_file)
+            if not valid:
+                print(f"Warning: Schema validation failed: {err}", file=sys.stderr)
+            else:
+                print("Game profile matches schema successfully.")
+
+    print(json.dumps(profile, indent=2))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://magebase.dev/schemas/game-profile.schema.json",
+  "title": "GameProfile",
+  "description": "Standardized schema for Phaser 4 mobile game project detection and architecture profile.",
+  "type": "object",
+  "required": ["identity", "mobile", "architecture", "art", "backend", "quality", "tooling"],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "required": ["name", "slug", "engine", "language", "bundler", "package_manager"],
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string", "pattern": "^[a-z0-9-_]+$" },
+        "version": { "type": "string", "default": "1.0.0" },
+        "engine": {
+          "type": "object",
+          "required": ["name", "version", "major", "minor"],
+          "properties": {
+            "name": { "type": "string", "enum": ["Phaser"] },
+            "version": { "type": "string" },
+            "major": { "type": "integer" },
+            "minor": { "type": "integer" }
+          }
+        },
+        "language": { "type": "string", "enum": ["javascript", "typescript"] },
+        "bundler": { "type": "string", "enum": ["vite", "webpack", "esbuild", "parcel", "rollup", "none"] },
+        "package_manager": { "type": "string", "enum": ["npm", "pnpm", "yarn", "bun", "none"] },
+        "repo_root": { "type": "string" }
+      }
+    },
+    "mobile": {
+      "type": "object",
+      "required": ["orientation", "target_viewports", "touch_controls"],
+      "properties": {
+        "orientation": {
+          "type": "string",
+          "enum": ["portrait", "landscape", "auto", "portrait-primary", "landscape-primary"]
+        },
+        "target_viewports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "width", "height"],
+            "properties": {
+              "name": { "type": "string" },
+              "width": { "type": "integer" },
+              "height": { "type": "integer" },
+              "device_pixel_ratio": { "type": "number", "default": 2.0 }
+            }
+          }
+        },
+        "safe_areas": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "top": { "type": "number", "default": 44 },
+            "bottom": { "type": "number", "default": 34 },
+            "left": { "type": "number", "default": 0 },
+            "right": { "type": "number", "default": 0 }
+          }
+        },
+        "touch_controls": {
+          "type": "object",
+          "required": ["enabled", "type"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "type": {
+              "type": "string",
+              "enum": ["virtual_joystick", "swipe_gestures", "on_screen_buttons", "tap_to_move", "hybrid", "custom"]
+            },
+            "multi_touch": { "type": "boolean", "default": true },
+            "haptic_feedback": { "type": "boolean", "default": false }
+          }
+        },
+        "performance_tier": {
+          "type": "string",
+          "enum": ["low", "mid", "high", "ultra"],
+          "default": "mid"
+        }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "required": ["entry_point", "scene_graph"],
+      "properties": {
+        "entry_point": { "type": "string" },
+        "scene_graph": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "file"],
+            "properties": {
+              "key": { "type": "string" },
+              "file": { "type": "string" },
+              "type": { "type": "string" },
+              "transitions_to": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "state_management": {
+          "type": "string",
+          "enum": ["scene_data", "registry", "pinia", "zustand", "redux", "custom_event_bus"],
+          "default": "registry"
+        },
+        "ui_layer": {
+          "type": "string",
+          "enum": ["dom_overlay", "phaser_gameobjects", "rex_ui", "custom_canvas"],
+          "default": "phaser_gameobjects"
+        }
+      }
+    },
+    "art": {
+      "type": "object",
+      "required": ["asset_roots"],
+      "properties": {
+        "asset_roots": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "catalogs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "style_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "sheet_conventions": {
+          "type": "object",
+          "properties": {
+            "default_tile_size": { "type": "integer", "default": 16 },
+            "standard_paddings": { "type": "integer", "default": 0 }
+          }
+        },
+        "animation_manifests": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "backend": {
+      "type": "object",
+      "required": ["mode", "persistence"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["none", "django", "cloudflare", "hybrid", "custom_rest", "supabase", "firebase"]
+        },
+        "base_url": { "type": "string" },
+        "endpoints": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "auth": {
+          "type": "string",
+          "enum": ["session_cookie", "jwt_bearer", "token", "anonymous", "none"],
+          "default": "anonymous"
+        },
+        "persistence": {
+          "type": "string",
+          "enum": ["local_storage", "indexed_db", "server_sync", "offline_first_sync"]
+        }
+      }
+    },
+    "cloudflare": {
+      "type": "object",
+      "properties": {
+        "wrangler_config": { "type": ["string", "null"] },
+        "worker_type": {
+          "type": "string",
+          "enum": ["python", "javascript", "typescript", "none"]
+        },
+        "bindings": {
+          "type": "object",
+          "properties": {
+            "d1": { "type": "array", "items": { "type": "string" } },
+            "r2": { "type": "array", "items": { "type": "string" } },
+            "kv": { "type": "array", "items": { "type": "string" } },
+            "queues": { "type": "array", "items": { "type": "string" } },
+            "durable_objects": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "properties": {
+        "target_fps": { "type": "integer", "default": 60 },
+        "max_initial_bundle_mb": { "type": "number", "default": 8.0 },
+        "max_memory_mb": { "type": "number", "default": 128 }
+      }
+    },
+    "tooling": {
+      "type": "object",
+      "properties": {
+        "dev_cmd": { "type": "string" },
+        "build_cmd": { "type": "string" },
+        "test_cmd": { "type": "string" },
+        "lint_cmd": { "type": "string" },
+        "smoke_cmd": { "type": "string" }
+      }
+    }
+  }
+}

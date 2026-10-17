@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://magebase.dev/schemas/capability-registry.schema.json",
+  "title": "CapabilityRegistry",
+  "description": "Schema for the canonical routing registry of game development capabilities and playbooks.",
+  "type": "object",
+  "required": ["version", "updated_at", "capabilities"],
+  "properties": {
+    "version": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "domain",
+          "description",
+          "triggers",
+          "prerequisites",
+          "playbook",
+          "inputs",
+          "outputs"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9_.-]+$" },
+          "title": { "type": "string" },
+          "domain": {
+            "type": "string",
+            "enum": ["lifecycle", "phaser4", "game-quality", "art-pipeline", "backend", "qa"]
+          },
+          "description": { "type": "string" },
+          "triggers": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "playbook": { "type": "string" },
+          "tool_commands": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "inputs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "outputs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "hard_blockers_resolved": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

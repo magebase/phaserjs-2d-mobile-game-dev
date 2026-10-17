@@ -1,0 +1,95 @@
+{
+  "identity": {
+    "name": "Sample Phaser 4 Mobile Adventure",
+    "slug": "sample-phaser4-adventure",
+    "version": "1.0.0",
+    "engine": {
+      "name": "Phaser",
+      "version": "4.2.1",
+      "major": 4,
+      "minor": 2
+    },
+    "language": "javascript",
+    "bundler": "vite",
+    "package_manager": "npm",
+    "repo_root": "."
+  },
+  "mobile": {
+    "orientation": "portrait",
+    "target_viewports": [
+      { "name": "iPhone 14 / 15", "width": 390, "height": 844, "device_pixel_ratio": 3.0 },
+      { "name": "Pixel 7 / 8", "width": 412, "height": 915, "device_pixel_ratio": 2.625 },
+      { "name": "iPad Mini", "width": 744, "height": 1133, "device_pixel_ratio": 2.0 }
+    ],
+    "safe_areas": {
+      "enabled": true,
+      "top": 47,
+      "bottom": 34,
+      "left": 0,
+      "right": 0
+    },
+    "touch_controls": {
+      "enabled": true,
+      "type": "virtual_joystick",
+      "multi_touch": true,
+      "haptic_feedback": false
+    },
+    "performance_tier": "mid"
+  },
+  "architecture": {
+    "entry_point": "src/main.js",
+    "scene_graph": [
+      { "key": "BootScene", "file": "src/scenes/BootScene.js", "type": "lifecycle", "transitions_to": ["PreloadScene"] },
+      { "key": "PreloadScene", "file": "src/scenes/PreloadScene.js", "type": "loader", "transitions_to": ["MainMenuScene"] },
+      { "key": "MainMenuScene", "file": "src/scenes/MainMenuScene.js", "type": "ui", "transitions_to": ["GameScene"] },
+      { "key": "GameScene", "file": "src/scenes/GameScene.js", "type": "gameplay", "transitions_to": ["GameOverScene"] },
+      { "key": "GameOverScene", "file": "src/scenes/GameOverScene.js", "type": "ui", "transitions_to": ["MainMenuScene", "GameScene"] }
+    ],
+    "state_management": "registry",
+    "ui_layer": "phaser_gameobjects"
+  },
+  "art": {
+    "asset_roots": ["public/assets"],
+    "catalogs": ["asset-catalog.json"],
+    "style_tags": ["pixel-art", "top-down", "16-bit"],
+    "sheet_conventions": {
+      "default_tile_size": 16,
+      "standard_paddings": 0
+    },
+    "animation_manifests": ["public/assets/animations.json"]
+  },
+  "backend": {
+    "mode": "cloudflare",
+    "base_url": "https://game-api.example.com",
+    "endpoints": {
+      "save_state": "/api/v1/save/",
+      "load_state": "/api/v1/load/",
+      "leaderboard": "/api/v1/leaderboard/"
+    },
+    "auth": "anonymous",
+    "persistence": "offline_first_sync"
+  },
+  "cloudflare": {
+    "wrangler_config": "wrangler.jsonc",
+    "worker_type": "javascript",
+    "bindings": {
+      "d1": ["GAME_DB"],
+      "r2": ["GAME_ASSETS"],
+      "kv": ["GAME_CONFIG"],
+      "queues": ["TELEMETRY_QUEUE"],
+      "durable_objects": ["GAME_ROOM"]
+    }
+  },
+  "quality": {
+    "target_fps": 60,
+    "max_initial_bundle_mb": 6.0,
+    "max_memory_mb": 96
+  },
+  "tooling": {
+    "dev_cmd": "npm run dev",
+    "build_cmd": "npm run build",
+    "test_cmd": "npm test",
+    "lint_cmd": "npm run lint",
+    "smoke_cmd": "npm run test:smoke"
+  }
+}

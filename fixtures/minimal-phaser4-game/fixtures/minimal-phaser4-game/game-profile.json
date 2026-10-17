@@ -1,0 +1,114 @@
+{
+  "identity": {
+    "name": "minimal-phaser4-game",
+    "slug": "minimal-phaser4-game",
+    "version": "1.0.0",
+    "engine": {
+      "name": "Phaser",
+      "version": "4.2.1",
+      "major": 4,
+      "minor": 2
+    },
+    "language": "javascript",
+    "bundler": "vite",
+    "package_manager": "npm",
+    "repo_root": "/home/aqua/skills/phaserjs-2d-mobile-game-dev/fixtures/minimal-phaser4-game"
+  },
+  "mobile": {
+    "orientation": "portrait",
+    "target_viewports": [
+      {
+        "name": "iPhone 14 / 15",
+        "width": 390,
+        "height": 844,
+        "device_pixel_ratio": 3.0
+      },
+      {
+        "name": "Pixel 7 / 8",
+        "width": 412,
+        "height": 915,
+        "device_pixel_ratio": 2.625
+      }
+    ],
+    "safe_areas": {
+      "enabled": true,
+      "top": 44,
+      "bottom": 34,
+      "left": 0,
+      "right": 0
+    },
+    "touch_controls": {
+      "enabled": true,
+      "type": "virtual_joystick",
+      "multi_touch": true,
+      "haptic_feedback": false
+    },
+    "performance_tier": "mid"
+  },
+  "architecture": {
+    "entry_point": "src/main.js",
+    "scene_graph": [
+      {
+        "key": "GameScene",
+        "file": "src/scenes/GameScene.js",
+        "type": "gameplay",
+        "transitions_to": []
+      },
+      {
+        "key": "BootScene",
+        "file": "src/scenes/BootScene.js",
+        "type": "ui",
+        "transitions_to": [
+          "PreloadScene"
+        ]
+      },
+      {
+        "key": "PreloadScene",
+        "file": "src/scenes/PreloadScene.js",
+        "type": "ui",
+        "transitions_to": [
+          "GameScene"
+        ]
+      }
+    ],
+    "state_management": "registry",
+    "ui_layer": "phaser_gameobjects"
+  },
+  "art": {
+    "asset_roots": [
+      "public/assets",
+      "public"
+    ],
+    "catalogs": [
+      "asset-catalog.json"
+    ],
+    "style_tags": [
+      "pixel-art",
+      "2d"
+    ],
+    "sheet_conventions": {
+      "default_tile_size": 16,
+      "standard_paddings": 0
+    },
+    "animation_manifests": []
+  },
+  "backend": {
+    "mode": "none",
+    "base_url": "",
+    "endpoints": {},
+    "auth": "anonymous",
+    "persistence": "local_storage"
+  },
+  "quality": {
+    "target_fps": 60,
+    "max_initial_bundle_mb": 8.0,
+    "max_memory_mb": 128
+  },
+  "tooling": {
+    "dev_cmd": "npm run dev",
+    "build_cmd": "npm run build",
+    "test_cmd": "npm test",
+    "lint_cmd": "npm run lint",
+    "smoke_cmd": "npm run test:smoke"
+  }
+}
