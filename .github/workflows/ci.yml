@@ -32,8 +32,13 @@ jobs:
         run: |
           python3 scripts/validate-registry.py
 
+      - name: Validate Game Profiles Against Schema
+        run: |
+          python3 scripts/validate-profiles.py
+
       - name: Verify Upstream Reference Skills
         run: |
+          python3 scripts/check-phaser-reference.py
           chmod +x upstream/sync-phaser-skills.sh
           ./upstream/sync-phaser-skills.sh --check
 

@@ -235,12 +235,22 @@ def probe_project(root_dir: str | Path) -> Dict[str, Any]:
     """Execute complete project probe and return GameProfile dict."""
     root = Path(root_dir).resolve()
     
+    # Check for existing profile (magebase.game.json or game-profile.json)
+    existing_profile = {}
+    for fname in ["magebase.game.json", "game-profile.json"]:
+        if (root / fname).exists():
+            try:
+                existing_profile = load_json(root / fname)
+                break
+            except Exception:
+                pass
+    
     pkg_file = root / "package.json"
     pkg = load_json(pkg_file) if pkg_file.exists() else {}
     
-    name = pkg.get("name", root.name)
-    slug = re.sub(r"[^a-z0-9-_]", "-", name.lower()).strip("-") or "phaser-game"
-    version = pkg.get("version", "1.0.0")
+    name = existing_profile.get("identity", {}).get("name") or pkg.get("name", root.name)
+    slug = existing_profile.get("identity", {}).get("slug") or (re.sub(r"[^a-z0-9-_]", "-", name.lower()).strip("-") or "phaser-game")
+    version = existing_profile.get("identity", {}).get("version") or pkg.get("version", "1.0.0")
     
     engine = detect_phaser_version(pkg, root)
     language = detect_language(root)

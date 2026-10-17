@@ -17,13 +17,13 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # probe command
-    probe_parser = subparsers.add_parser("probe", help="Probe project and generate game-profile.json")
+    # probe / inspect command
+    probe_parser = subparsers.add_parser("probe", aliases=["inspect"], help="Probe project and generate game-profile.json")
     probe_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
     probe_parser.add_argument("-o", "--output", default="game-profile.json", help="Output JSON path")
 
     # audit command
-    audit_parser = subparsers.add_parser("audit", help="Audit assets and generate asset-catalog.json")
+    audit_parser = subparsers.add_parser("audit", aliases=["assets"], help="Audit assets and generate asset-catalog.json")
     audit_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
     audit_parser.add_argument("-o", "--output", default="asset-catalog.json", help="Output JSON path")
 
@@ -38,14 +38,26 @@ def main():
     verify_parser = subparsers.add_parser("verify", help="Run automated test suite and verification gates")
     verify_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
 
+    # visual-qa command
+    visual_parser = subparsers.add_parser("visual-qa", help="Run visual regression and canvas viewport checks")
+    visual_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
+
+    # runtime-qa command
+    runtime_parser = subparsers.add_parser("runtime-qa", aliases=["smoke"], help="Run console error and runtime smoke tests")
+    runtime_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
+
+    # backend-qa command
+    backend_parser = subparsers.add_parser("backend-qa", help="Run Django and Cloudflare Worker contract checks")
+    backend_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
+
     args = parser.parse_args()
     tools_dir = repo_root / "tools"
 
-    if args.command == "probe":
+    if args.command in ("probe", "inspect"):
         cmd = [sys.executable, str(tools_dir / "project-probe"), args.path, "-o", args.output]
         sys.exit(subprocess.call(cmd))
 
-    elif args.command == "audit":
+    elif args.command in ("audit", "assets"):
         cmd = [sys.executable, str(tools_dir / "asset-audit"), args.path, "-o", args.output]
         sys.exit(subprocess.call(cmd))
 
@@ -57,23 +69,43 @@ def main():
             cmd.extend(["--catalog", args.catalog])
         sys.exit(subprocess.call(cmd))
 
+    elif args.command == "visual-qa":
+        cmd = [sys.executable, str(tools_dir / "visual-qa" / "cli.py"), args.path]
+        sys.exit(subprocess.call(cmd))
+
+    elif args.command in ("runtime-qa", "smoke"):
+        cmd = [sys.executable, str(tools_dir / "runtime-qa" / "cli.py"), args.path]
+        sys.exit(subprocess.call(cmd))
+
+    elif args.command == "backend-qa":
+        cmd = [sys.executable, str(tools_dir / "backend-qa" / "cli.py"), args.path]
+        sys.exit(subprocess.call(cmd))
+
     elif args.command == "verify":
         target = Path(args.path).resolve()
-        print(f"Executing verification on: {target}")
+        print(f"Executing complete verification on: {target}")
         
         # 1. Run probe
-        print("\n--- [1/3] Running Project Probe ---")
+        print("\n--- [1/5] Running Project Probe ---")
         p_res = subprocess.call([sys.executable, str(tools_dir / "project-probe"), str(target)])
         
-        # 2. Run audit
-        print("\n--- [2/3] Running Asset Audit ---")
+        # 2. Run asset audit
+        print("\n--- [2/5] Running Asset Audit ---")
         a_res = subprocess.call([sys.executable, str(tools_dir / "asset-audit"), str(target)])
         
-        # 3. Run report
-        print("\n--- [3/3] Evaluating Quality Contract ---")
+        # 3. Run visual QA
+        print("\n--- [3/5] Running Visual QA ---")
+        v_res = subprocess.call([sys.executable, str(tools_dir / "visual-qa" / "cli.py"), str(target)])
+
+        # 4. Run runtime QA
+        print("\n--- [4/5] Running Runtime QA ---")
+        rt_res = subprocess.call([sys.executable, str(tools_dir / "runtime-qa" / "cli.py"), str(target)])
+
+        # 5. Run report
+        print("\n--- [5/5] Evaluating Quality Contract ---")
         r_res = subprocess.call([sys.executable, str(tools_dir / "report"), str(target)])
         
-        if p_res == 0 and a_res == 0 and r_res == 0:
+        if p_res == 0 and a_res == 0 and v_res == 0 and rt_res == 0 and r_res == 0:
             print("\nVerification completed successfully.")
             sys.exit(0)
         else:

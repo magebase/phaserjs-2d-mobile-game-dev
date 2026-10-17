@@ -1,0 +1,1 @@
+this.load.image("ghost_sprite", "assets/does_not_exist.png");
