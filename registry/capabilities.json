@@ -51,6 +51,18 @@
       "outputs": ["GAME_QUALITY.md", "audit-report.json"]
     },
     {
+      "id": "lifecycle.prove_improvements",
+      "title": "Prove Improvements & Guardrail Verification",
+      "domain": "lifecycle",
+      "description": "Formulate hypotheses, compare before and after quality reports, verify guardrail preservation, and enforce accept/rollback decisions.",
+      "triggers": ["prove improvement", "compare reports", "verify hypothesis", "guardrail check", "quality diff"],
+      "prerequisites": ["lifecycle.inspect_project"],
+      "playbook": "playbooks/lifecycle/prove-improvements.md",
+      "tool_commands": ["./tools/magebase-game prove --before <before> --after <after>"],
+      "inputs": ["before audit report", "after audit report", "hypothesis.json"],
+      "outputs": ["PROVE_IMPROVEMENTS.md", "diff evaluation result"]
+    },
+    {
       "id": "phaser4.architecture_scenes",
       "title": "Phaser 4 Scene Architecture & Lifecycle",
       "domain": "phaser4",

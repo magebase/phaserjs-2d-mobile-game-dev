@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T11:35:35.836714+00:00",
+  "generated_at": "2026-10-19T01:37:28.724516+00:00",
   "total_files": 4,
   "total_bytes": 386,
   "items": [
@@ -9,9 +9,15 @@
       "format": "png",
       "size_bytes": 86,
       "sha256": "c39cd449fbd846c5b8cbc8ae01471dd1d402b994736b7c49dd14a150f7ccf123",
+      "semantic_roles": [
+        "hero",
+        "playable_character"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "hero",
+        "playable_character"
       ],
       "defects": [],
       "dimensions": {
@@ -19,7 +25,24 @@
         "height": 16,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 16,
+        "max_y": 16,
+        "content_width": 16,
+        "content_height": 16,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#00ff80"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "public/assets/tileset.png",
@@ -27,9 +50,15 @@
       "format": "png",
       "size_bytes": 107,
       "sha256": "935f33cb4b144d0954d4a1a5a66383ebfa234813d6fe53cf3f3c1008bca75053",
+      "semantic_roles": [
+        "tile",
+        "environment"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "tile",
+        "environment"
       ],
       "defects": [],
       "dimensions": {
@@ -37,7 +66,24 @@
         "height": 32,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 32,
+        "max_y": 32,
+        "content_width": 32,
+        "content_height": 32,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#4040c8"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "public/assets/player.png",
@@ -45,9 +91,15 @@
       "format": "png",
       "size_bytes": 86,
       "sha256": "c39cd449fbd846c5b8cbc8ae01471dd1d402b994736b7c49dd14a150f7ccf123",
+      "semantic_roles": [
+        "hero",
+        "playable_character"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "hero",
+        "playable_character"
       ],
       "defects": [
         "duplicate_of:public/assets/player.png"
@@ -57,7 +109,24 @@
         "height": 16,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 16,
+        "max_y": 16,
+        "content_width": 16,
+        "content_height": 16,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#00ff80"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "public/assets/tileset.png",
@@ -65,9 +134,15 @@
       "format": "png",
       "size_bytes": 107,
       "sha256": "935f33cb4b144d0954d4a1a5a66383ebfa234813d6fe53cf3f3c1008bca75053",
+      "semantic_roles": [
+        "tile",
+        "environment"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "tile",
+        "environment"
       ],
       "defects": [
         "duplicate_of:public/assets/tileset.png"
@@ -77,7 +152,24 @@
         "height": 32,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 32,
+        "max_y": 32,
+        "content_width": 32,
+        "content_height": 32,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#4040c8"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     }
   ],
   "summary": {

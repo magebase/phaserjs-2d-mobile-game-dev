@@ -48,6 +48,96 @@ def inspect_image(filepath: Path) -> Tuple[Optional[Dict[str, Any]], bool, List[
         return None, False, [f"corrupt_or_unreadable: {str(e)}"]
 
 
+def extract_art_intelligence(filepath: Path) -> Tuple[Optional[Dict[str, Any]], List[str], str, Dict[str, Any]]:
+    """Extract transparent bounding box, dominant palette, facing direction, and suitability."""
+    if Image is None:
+        return None, [], "unknown", {"score": 5.0, "notes": "PIL not available"}
+
+    try:
+        with Image.open(filepath) as img:
+            w, h = img.size
+            rgba = img.convert("RGBA")
+            bbox = rgba.getbbox()
+            if bbox:
+                min_x, min_y, max_x, max_y = bbox
+                cw = max_x - min_x
+                ch = max_y - min_y
+                trim_ratio = round((cw * ch) / max(1, w * h), 3)
+                bounds = {
+                    "min_x": min_x,
+                    "min_y": min_y,
+                    "max_x": max_x,
+                    "max_y": max_y,
+                    "content_width": cw,
+                    "content_height": ch,
+                    "trim_ratio": trim_ratio
+                }
+            else:
+                bounds = {
+                    "min_x": 0, "min_y": 0, "max_x": w, "max_y": h,
+                    "content_width": w, "content_height": h, "trim_ratio": 1.0
+                }
+
+            # Sample dominant palette
+            small = rgba.resize((32, 32))
+            colors = small.getcolors(maxcolors=1024) or []
+            solid_colors = [(count, c) for count, c in colors if len(c) < 4 or c[3] > 64]
+            solid_colors.sort(reverse=True, key=lambda x: x[0])
+            hex_palette = []
+            for _, c in solid_colors[:5]:
+                hex_palette.append(f"#{c[0]:02x}{c[1]:02x}{c[2]:02x}")
+
+            if bbox:
+                mid_x = (bbox[0] + bbox[2]) / 2.0
+                img_mid_x = w / 2.0
+                delta = (mid_x - img_mid_x) / max(1.0, w)
+                if delta < -0.05:
+                    facing = "left"
+                elif delta > 0.05:
+                    facing = "right"
+                else:
+                    facing = "centered"
+            else:
+                facing = "omni"
+
+            suitability = {
+                "score": 9.0 if bounds.get("trim_ratio", 1.0) >= 0.25 else 6.0,
+                "notes": "Crisp non-empty silhouette" if bounds.get("trim_ratio", 1.0) >= 0.25 else "Significant empty padding"
+            }
+            return bounds, hex_palette, facing, suitability
+    except Exception as e:
+        return None, [], "unknown", {"score": 3.0, "notes": f"Error inspecting image: {e}"}
+
+
+def infer_semantic_roles(rel_path: str, atype: str) -> List[str]:
+    """Infer game semantic role from asset path and type."""
+    p_lower = rel_path.lower()
+    roles = []
+    if any(k in p_lower for k in ["hero", "player", "knight", "mage", "archer", "protagonist"]):
+        roles.extend(["hero", "playable_character"])
+    if any(k in p_lower for k in ["enemy", "skeleton", "goblin", "slime", "demon", "monster", "orc"]):
+        roles.extend(["enemy", "combatant"])
+    if any(k in p_lower for k in ["boss", "dragon", "overlord", "reaper"]):
+        roles.extend(["boss", "combatant"])
+    if any(k in p_lower for k in ["bullet", "arrow", "projectile", "laser", "missile", "fireball"]):
+        roles.extend(["projectile", "hazard"])
+    if any(k in p_lower for k in ["tile", "dungeon", "wall", "floor", "terrain", "ground"]):
+        roles.extend(["tile", "environment"])
+    if any(k in p_lower for k in ["coin", "gem", "potion", "pickup", "chest", "loot", "item"]):
+        roles.extend(["pickup", "economy"])
+    if any(k in p_lower for k in ["fx", "vfx", "particle", "slash", "explosion", "smoke", "flash"]):
+        roles.extend(["vfx", "feedback"])
+    if any(k in p_lower for k in ["ui", "hud", "btn", "button", "icon", "bar", "dialog", "panel"]):
+        roles.extend(["hud", "ui_control"])
+    if atype == "audio":
+        if any(k in p_lower for k in ["music", "bgm", "theme", "ambient"]):
+            roles.append("audio_bgm")
+        else:
+            roles.append("audio_sfx")
+
+    return roles or ["general_asset"]
+
+
 def classify_asset(filepath: Path) -> Tuple[str, str]:
     """Classify asset type and format."""
     ext = filepath.suffix.lower()
@@ -58,7 +148,6 @@ def classify_asset(filepath: Path) -> Tuple[str, str]:
     if ext in FONT_EXTS:
         return "font", ext.lstrip(".")
     if ext in DATA_EXTS:
-        # Check if tilemap or atlas
         try:
             text = filepath.read_text(encoding="utf-8", errors="ignore")[:500]
             if "tilewidth" in text or "layers" in text:
@@ -72,7 +161,7 @@ def classify_asset(filepath: Path) -> Tuple[str, str]:
 
 
 def analyze_assets(root_dir: str | Path, asset_roots: Optional[List[str]] = None) -> Dict[str, Any]:
-    """Scan and catalog all game assets in the repository."""
+    """Scan and catalog all game assets in the repository with art intelligence."""
     root = Path(root_dir).resolve()
     
     if not asset_roots:
@@ -115,6 +204,10 @@ def analyze_assets(root_dir: str | Path, asset_roots: Optional[List[str]] = None
             dim_info = None
             has_alpha = False
             item_defects = []
+            bounds = None
+            palette: List[str] = []
+            facing = "unknown"
+            suitability: Optional[Dict[str, Any]] = None
             
             # Duplicate detection
             if sha in seen_hashes:
@@ -126,6 +219,7 @@ def analyze_assets(root_dir: str | Path, asset_roots: Optional[List[str]] = None
                 images_count += 1
                 dim_info, has_alpha, img_defects = inspect_image(f)
                 item_defects.extend(img_defects)
+                bounds, palette, facing, suitability = extract_art_intelligence(f)
             elif atype == "audio":
                 audio_count += 1
             elif atype == "atlas":
@@ -136,6 +230,7 @@ def analyze_assets(root_dir: str | Path, asset_roots: Optional[List[str]] = None
                 tilemaps_count += 1
                 
             total_defects += len(item_defects)
+            roles = infer_semantic_roles(rel_path, atype)
             
             item_entry: Dict[str, Any] = {
                 "path": rel_path,
@@ -143,12 +238,21 @@ def analyze_assets(root_dir: str | Path, asset_roots: Optional[List[str]] = None
                 "format": aformat,
                 "size_bytes": fsize,
                 "sha256": sha,
-                "tags": [atype, aformat],
+                "semantic_roles": roles,
+                "tags": [atype, aformat] + roles,
                 "defects": item_defects
             }
             if dim_info:
                 item_entry["dimensions"] = dim_info
                 item_entry["alpha_channel"] = has_alpha
+            if bounds:
+                item_entry["transparent_bounds"] = bounds
+            if palette:
+                item_entry["dominant_palette"] = palette
+            if facing != "unknown":
+                item_entry["facing_direction"] = facing
+            if suitability:
+                item_entry["suitability"] = suitability
                 
             items.append(item_entry)
             

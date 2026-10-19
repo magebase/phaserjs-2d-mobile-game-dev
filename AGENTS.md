@@ -68,9 +68,9 @@ Execute the following bounded 11-step state machine:
    - Score the 8 Quality Dimensions (1–10).
 
 5. **Prioritize**:
-   - Rank identified gaps using the formula:
-     $$\text{Priority Score} = (\text{Blocker Weight} \times 10) + (\text{Impact} \times 3) + (\text{Confidence} \times 2) - \text{Effort}$$
-   - Hard release blockers take absolute priority over cosmetic polish.
+   - Rank identified gaps using the canonical formula:
+     $$\text{Priority Score} = (\text{IsBlocker} \times 100) + (\text{Impact} \times 10) + (\text{Confidence} \times 5) - (\text{Effort} \times 3)$$
+   - Hard release blockers (**RB-01** to **RB-08**) receive $\text{IsBlocker} = 1$, giving them absolute mathematical priority over cosmetic polish.
 
 6. **Select**:
    - Choose the single highest-value actionable item that can be delivered as an atomic change.

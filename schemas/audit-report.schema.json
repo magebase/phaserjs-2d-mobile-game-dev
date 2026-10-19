@@ -57,42 +57,186 @@
         "fun_core_loop": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "mobile_usability": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "game_feel_juice": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "art_cohesion": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "audio_feedback": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "technical_stability": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "load_performance": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
         },
         "release_readiness": {
           "type": "object",
           "required": ["score", "notes"],
-          "properties": { "score": { "type": "number", "minimum": 1, "maximum": 10 }, "notes": { "type": "string" } }
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 10 },
+            "notes": { "type": "string" },
+            "evidence_tier": { "type": "string", "enum": ["mechanical_check", "expert_heuristic", "player_simulation", "unverified"] },
+            "evaluation_method": { "type": "string" },
+            "genre_specific_notes": { "type": "string" }
+          }
+        }
+      }
+    },
+    "genre": {
+      "type": "string",
+      "enum": ["turn_based_roguelike", "action_shooter", "platformer", "puzzle", "autobattler", "general_2d"]
+    },
+    "mechanical_verifications": {
+      "type": "object",
+      "properties": {
+        "build": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": { "type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"] },
+            "command": { "type": "string" },
+            "exit_code": { "type": "integer" },
+            "evidence": { "type": "string" }
+          }
+        },
+        "tests": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": { "type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"] },
+            "command": { "type": "string" },
+            "passed": { "type": "integer" },
+            "total": { "type": "integer" },
+            "evidence": { "type": "string" }
+          }
+        },
+        "runtime_boot": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": { "type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"] },
+            "scenes_audited": { "type": "integer" },
+            "errors_count": { "type": "integer" },
+            "evidence": { "type": "string" }
+          }
+        },
+        "fps_metrics": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": { "type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"] },
+            "target_fps": { "type": "number" },
+            "p50_fps": { "type": "number" },
+            "p95_fps": { "type": "number" },
+            "p99_fps": { "type": "number" },
+            "jank_frames": { "type": "integer" },
+            "evidence": { "type": "string" }
+          }
+        },
+        "asset_integrity": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": { "type": "string", "enum": ["PASS", "FAIL", "UNVERIFIED"] },
+            "total_files": { "type": "integer" },
+            "missing_count": { "type": "integer" },
+            "corrupt_count": { "type": "integer" },
+            "evidence": { "type": "string" }
+          }
+        }
+      }
+    },
+    "genre_evaluation": {
+      "type": "object",
+      "required": ["genre", "criteria"],
+      "properties": {
+        "genre": { "type": "string" },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["criterion", "status", "evidence"],
+            "properties": {
+              "criterion": { "type": "string" },
+              "status": { "type": "string", "enum": ["PASS", "FAIL", "WARN", "UNVERIFIED"] },
+              "evidence": { "type": "string" }
+            }
+          }
+        },
+        "anti_patterns_detected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["anti_pattern", "severity", "evidence", "recommendation"],
+            "properties": {
+              "anti_pattern": { "type": "string" },
+              "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+              "evidence": { "type": "string" },
+              "recommendation": { "type": "string" }
+            }
+          }
         }
       }
     },

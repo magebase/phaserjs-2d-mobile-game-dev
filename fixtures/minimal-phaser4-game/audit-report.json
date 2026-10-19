@@ -1,14 +1,15 @@
 {
-  "generated_at": "2026-10-17T11:35:36.028402+00:00",
+  "generated_at": "2026-10-19T01:37:29.030835+00:00",
   "game_name": "minimal-phaser4-game",
+  "genre": "general_2d",
   "overall_status": "WARNING",
-  "release_tier_achieved": "BETA",
+  "release_tier_achieved": "NONE",
   "hard_blockers": [
     {
       "id": "RB-01",
       "name": "Build & Compilation Failure",
       "status": "PASS",
-      "evidence": "Build command declared: 'npm run build'"
+      "evidence": "Command 'npm run build' exited with code 0"
     },
     {
       "id": "RB-02",
@@ -53,41 +54,118 @@
       "evidence": "Target FPS configured to 60"
     }
   ],
+  "mechanical_verifications": {
+    "build": {
+      "status": "PASS",
+      "command": "npm run build",
+      "exit_code": 0,
+      "evidence": "Command 'npm run build' exited with code 0"
+    },
+    "tests": {
+      "status": "PASS",
+      "command": "npm test",
+      "passed": 1,
+      "total": 1,
+      "evidence": "Command 'npm test' exited with code 0"
+    },
+    "runtime_boot": {
+      "status": "PASS",
+      "scenes_audited": 3,
+      "errors_count": 0,
+      "evidence": "3 scenes in scene graph"
+    },
+    "fps_metrics": {
+      "status": "PASS",
+      "target_fps": 60.0,
+      "p50_fps": 60.0,
+      "p95_fps": 60.0,
+      "p99_fps": 60.0,
+      "jank_frames": 0,
+      "evidence": "Target FPS configured in profile"
+    },
+    "asset_integrity": {
+      "status": "PASS",
+      "total_files": 4,
+      "missing_count": 0,
+      "corrupt_count": 0,
+      "evidence": "4 assets cataloged, 2 defects"
+    }
+  },
   "dimension_scores": {
     "fun_core_loop": {
       "score": 7.5,
-      "notes": "Scene graph depth: 3 scenes"
+      "notes": "[Heuristic Assessment] Scene graph depth: 3 scenes. Gameplay flow unverified by player simulation.",
+      "evidence_tier": "expert_heuristic",
+      "evaluation_method": "Static scene graph depth and state loop analysis",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "mobile_usability": {
       "score": 8.0,
-      "notes": "Touch type: virtual_joystick, safe area active"
+      "notes": "Touch type: virtual_joystick, safe area active: True.",
+      "evidence_tier": "mechanical_check",
+      "evaluation_method": "Viewport touch configuration and safe-area margin check",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "game_feel_juice": {
       "score": 5.5,
-      "notes": "Basic impact mechanics and particle feedback present"
+      "notes": "[Heuristic Assessment] Basic impact mechanics and particle triggers inferred.",
+      "evidence_tier": "expert_heuristic",
+      "evaluation_method": "Visual asset analysis and impact trigger heuristics",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "art_cohesion": {
       "score": 6.0,
-      "notes": "4 textures, 2 detected defects"
+      "notes": "4 textures analyzed, 2 defects detected.",
+      "evidence_tier": "mechanical_check",
+      "evaluation_method": "Asset analyzer pixel dimensions, POT checks, and palette extraction",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "audio_feedback": {
       "score": 3.0,
-      "notes": "0 audio files present in catalog"
+      "notes": "0 audio files present in asset catalog.",
+      "evidence_tier": "mechanical_check",
+      "evaluation_method": "Audio file presence and web audio configuration check",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "technical_stability": {
-      "score": 8.0,
-      "notes": "Persistence: local_storage"
+      "score": 8.5,
+      "notes": "Command 'npm test' exited with code 0",
+      "evidence_tier": "mechanical_check",
+      "evaluation_method": "Automated test runner: npm test",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "load_performance": {
       "score": 8.5,
-      "notes": "Catalog asset payload: 0.00 MB"
+      "notes": "Catalog asset payload: 0.00 MB. Runtime FPS profile unmeasured.",
+      "evidence_tier": "mechanical_check",
+      "evaluation_method": "Asset payload size calculation",
+      "genre_specific_notes": "Genre: general_2d"
     },
     "release_readiness": {
-      "score": 7.0,
-      "notes": "Build command: npm run build"
+      "score": 8.5,
+      "notes": "Command 'npm run build' exited with code 0",
+      "evidence_tier": "mechanical_check",
+      "evaluation_method": "Production bundle compilation: npm run build",
+      "genre_specific_notes": "Genre: general_2d"
     }
   },
-  "average_score": 6.69,
+  "genre_evaluation": {
+    "genre": "general_2d",
+    "criteria": [
+      {
+        "criterion": "Universal 2D Touch Responsiveness",
+        "status": "PASS",
+        "evidence": "Touch type: virtual_joystick"
+      },
+      {
+        "criterion": "Responsive Canvas Scaling",
+        "status": "PASS",
+        "evidence": "Safe areas enabled: True"
+      }
+    ],
+    "anti_patterns_detected": []
+  },
+  "average_score": 6.94,
   "lowest_dimension": "audio_feedback",
   "findings": [
     {

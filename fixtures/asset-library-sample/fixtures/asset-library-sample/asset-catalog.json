@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-17T11:33:22.645437+00:00",
-  "total_files": 5,
-  "total_bytes": 584,
+  "generated_at": "2026-10-19T01:19:18.159790+00:00",
+  "total_files": 6,
+  "total_bytes": 2867,
   "items": [
     {
       "path": "sprites/enemy_npot.png",
@@ -9,17 +9,42 @@
       "format": "png",
       "size_bytes": 124,
       "sha256": "0d0d0bef14c790d4e21e1b02adc5c444b49deca85700a827a6fad5f347f9b386",
+      "semantic_roles": [
+        "enemy",
+        "combatant"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "enemy",
+        "combatant"
       ],
-      "defects": [],
+      "defects": [
+        "non_power_of_two (45x33)"
+      ],
       "dimensions": {
         "width": 45,
         "height": 33,
         "is_power_of_two": false
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 45,
+        "max_y": 33,
+        "content_width": 45,
+        "content_height": 33,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#ff3232"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "sprites/hero_duplicate.png",
@@ -27,9 +52,15 @@
       "format": "png",
       "size_bytes": 108,
       "sha256": "4e07aa0d748e5686ba276bb9e8c8bd880b2e3e7bca034c05befcce808d81d34b",
+      "semantic_roles": [
+        "hero",
+        "playable_character"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "hero",
+        "playable_character"
       ],
       "defects": [],
       "dimensions": {
@@ -37,7 +68,24 @@
         "height": 32,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 32,
+        "max_y": 32,
+        "content_width": 32,
+        "content_height": 32,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#ffc832"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "sprites/hero.png",
@@ -45,9 +93,15 @@
       "format": "png",
       "size_bytes": 108,
       "sha256": "4e07aa0d748e5686ba276bb9e8c8bd880b2e3e7bca034c05befcce808d81d34b",
+      "semantic_roles": [
+        "hero",
+        "playable_character"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "hero",
+        "playable_character"
       ],
       "defects": [
         "duplicate_of:sprites/hero_duplicate.png"
@@ -57,7 +111,24 @@
         "height": 32,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 32,
+        "max_y": 32,
+        "content_width": 32,
+        "content_height": 32,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#ffc832"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "tiles/dungeon_tiles.png",
@@ -65,9 +136,15 @@
       "format": "png",
       "size_bytes": 210,
       "sha256": "b044c665d6db35820ff08be1789258161a96fdd4de17f9197b2c7e53ff3930a0",
+      "semantic_roles": [
+        "tile",
+        "environment"
+      ],
       "tags": [
         "image",
-        "png"
+        "png",
+        "tile",
+        "environment"
       ],
       "defects": [],
       "dimensions": {
@@ -75,7 +152,24 @@
         "height": 64,
         "is_power_of_two": true
       },
-      "alpha_channel": true
+      "alpha_channel": true,
+      "transparent_bounds": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 64,
+        "max_y": 64,
+        "content_width": 64,
+        "content_height": 64,
+        "trim_ratio": 1.0
+      },
+      "dominant_palette": [
+        "#649650"
+      ],
+      "facing_direction": "centered",
+      "suitability": {
+        "score": 9.0,
+        "notes": "Crisp non-empty silhouette"
+      }
     },
     {
       "path": "audio/pickup.ogg",
@@ -83,9 +177,33 @@
       "format": "ogg",
       "size_bytes": 34,
       "sha256": "8f220e597d7ddf0579421b6f2bc1f2fe7d586b4289b66e46061e75847a08ad83",
+      "semantic_roles": [
+        "pickup",
+        "economy",
+        "audio_sfx"
+      ],
       "tags": [
         "audio",
-        "ogg"
+        "ogg",
+        "pickup",
+        "economy",
+        "audio_sfx"
+      ],
+      "defects": []
+    },
+    {
+      "path": "fixtures/asset-library-sample/asset-catalog.json",
+      "type": "json",
+      "format": "json",
+      "size_bytes": 2283,
+      "sha256": "d5cc33341139607c355c73f717e7e39b261bc5f288313d1acdd26fbf0e4fb764",
+      "semantic_roles": [
+        "general_asset"
+      ],
+      "tags": [
+        "json",
+        "json",
+        "general_asset"
       ],
       "defects": []
     }
@@ -96,6 +214,6 @@
     "atlases_count": 0,
     "fonts_count": 0,
     "tilemaps_count": 0,
-    "defect_count": 1
+    "defect_count": 2
   }
 }

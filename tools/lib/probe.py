@@ -262,6 +262,24 @@ def probe_project(root_dir: str | Path) -> Dict[str, Any]:
     backend = detect_backend(root)
     cloudflare = detect_cloudflare(root)
     
+    # Detect or preserve genre
+    genre = existing_profile.get("identity", {}).get("genre", "general_2d")
+
+    if genre == "general_2d":
+        text_corpus = f"{name} {root.name}".lower()
+        for s in scenes:
+            text_corpus += f" {s.get('key', '')} {s.get('file', '')}".lower()
+        if any(k in text_corpus for k in ["rogue", "dungeon", "gravebound", "buriedbornes", "spire"]):
+            genre = "turn_based_roguelike"
+        elif any(k in text_corpus for k in ["shoot", "bullet", "action", "survivor"]):
+            genre = "action_shooter"
+        elif any(k in text_corpus for k in ["platform", "jump", "metroid"]):
+            genre = "platformer"
+        elif any(k in text_corpus for k in ["puzzle", "match3", "grid"]):
+            genre = "puzzle"
+        elif any(k in text_corpus for k in ["autobattle", "backpack"]):
+            genre = "autobattler"
+
     profile: Dict[str, Any] = {
         "identity": {
             "name": name,
@@ -271,6 +289,7 @@ def probe_project(root_dir: str | Path) -> Dict[str, Any]:
             "language": language,
             "bundler": bundler,
             "package_manager": package_manager,
+            "genre": genre,
             "repo_root": str(root)
         },
         "mobile": {
@@ -317,11 +336,11 @@ def probe_project(root_dir: str | Path) -> Dict[str, Any]:
             "max_memory_mb": 128
         },
         "tooling": {
-            "dev_cmd": f"{package_manager} run dev" if package_manager != "none" else "npx serve",
-            "build_cmd": f"{package_manager} run build" if package_manager != "none" else "",
-            "test_cmd": f"{package_manager} test" if package_manager != "none" else "",
-            "lint_cmd": f"{package_manager} run lint" if package_manager != "none" else "",
-            "smoke_cmd": "npm run test:smoke"
+            "dev_cmd": f"{package_manager} run dev" if "dev" in pkg.get("scripts", {}) else existing_profile.get("tooling", {}).get("dev_cmd", "npx serve"),
+            "build_cmd": f"{package_manager} run build" if "build" in pkg.get("scripts", {}) else existing_profile.get("tooling", {}).get("build_cmd", ""),
+            "test_cmd": f"{package_manager} test" if "test" in pkg.get("scripts", {}) else existing_profile.get("tooling", {}).get("test_cmd", ""),
+            "lint_cmd": f"{package_manager} run lint" if "lint" in pkg.get("scripts", {}) else existing_profile.get("tooling", {}).get("lint_cmd", ""),
+            "smoke_cmd": existing_profile.get("tooling", {}).get("smoke_cmd", "")
         }
     }
     

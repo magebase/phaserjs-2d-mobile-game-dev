@@ -21,6 +21,7 @@ def main():
     parser.add_argument("path", nargs="?", default=".", help="Root directory of the game project")
     parser.add_argument("--profile", default=None, help="Path to existing game-profile.json")
     parser.add_argument("--catalog", default=None, help="Path to existing asset-catalog.json")
+    parser.add_argument("--mech-in", default=None, help="Path to mechanical-results.json")
     parser.add_argument("--json-out", default="audit-report.json", help="Path for JSON report output")
     parser.add_argument("-o", "--output", default="GAME_QUALITY.md", help="Path for Markdown report output")
     args = parser.parse_args()
@@ -48,8 +49,15 @@ def main():
         print("Auditing assets...")
         catalog = analyze_assets(target)
 
+    # Load mechanical results if provided
+    mech = None
+    if args.mech_in and Path(args.mech_in).exists():
+        mech = load_json(Path(args.mech_in))
+    elif (target / ".mechanical-results.json").exists():
+        mech = load_json(target / ".mechanical-results.json")
+
     print("Evaluating against GAME_QUALITY_CONTRACT.md...")
-    report = generate_report(profile, catalog)
+    report = generate_report(profile, catalog, mechanical_results=mech)
 
     # Save JSON report
     json_path = Path(args.json_out)

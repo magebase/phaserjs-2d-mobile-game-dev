@@ -12,6 +12,7 @@
     "language": "javascript",
     "bundler": "vite",
     "package_manager": "npm",
+    "genre": "general_2d",
     "repo_root": "/home/aqua/skills/phaserjs-2d-mobile-game-dev/fixtures/minimal-phaser4-game"
   },
   "mobile": {

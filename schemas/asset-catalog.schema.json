@@ -42,6 +42,37 @@
             }
           },
           "alpha_channel": { "type": "boolean" },
+          "transparent_bounds": {
+            "type": "object",
+            "properties": {
+              "min_x": { "type": "integer" },
+              "min_y": { "type": "integer" },
+              "max_x": { "type": "integer" },
+              "max_y": { "type": "integer" },
+              "content_width": { "type": "integer" },
+              "content_height": { "type": "integer" },
+              "trim_ratio": { "type": "number" }
+            }
+          },
+          "semantic_roles": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "dominant_palette": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "facing_direction": {
+            "type": "string",
+            "enum": ["left", "right", "centered", "omni", "unknown"]
+          },
+          "suitability": {
+            "type": "object",
+            "properties": {
+              "score": { "type": "number" },
+              "notes": { "type": "string" }
+            }
+          },
           "tags": {
             "type": "array",
             "items": { "type": "string" }

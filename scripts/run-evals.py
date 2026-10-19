@@ -15,7 +15,12 @@ def main():
         evals_dir / "test-router-selection.py",
         evals_dir / "test-asset-reuse-priority.py",
         evals_dir / "test-report-schema.py",
-        evals_dir / "test-quality-contract.py"
+        evals_dir / "test-quality-contract.py",
+        evals_dir / "test-priority-formula.py",
+        evals_dir / "test-art-intelligence.py",
+        evals_dir / "test-genre-profiles.py",
+        evals_dir / "test-verify-command.py",
+        evals_dir / "test-prove-improvements.py"
     ]
 
     failed = 0
@@ -33,7 +38,7 @@ def main():
         sys.exit(1)
 
     print("=============================================================")
-    print("✓ All 4 evaluation suites passed successfully!")
+    print(f"✓ All {len(eval_scripts)} evaluation suites passed successfully!")
     print("=============================================================")
     sys.exit(0)
 

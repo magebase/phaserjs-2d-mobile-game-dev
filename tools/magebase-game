@@ -2,12 +2,17 @@
 """Unified CLI runner for phaserjs-2d-mobile-game-dev tools."""
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 repo_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(repo_root))
+
+from tools.lib.common import load_json, save_json
+from tools.lib.diff_evaluator import evaluate_diff, render_diff_markdown
+from tools.lib.prioritizer import generate_backlog
 
 
 def main():
@@ -32,7 +37,22 @@ def main():
     report_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
     report_parser.add_argument("--profile", default=None, help="Path to game-profile.json")
     report_parser.add_argument("--catalog", default=None, help="Path to asset-catalog.json")
+    report_parser.add_argument("--mech-in", default=None, help="Path to mechanical-results.json")
+    report_parser.add_argument("--json-out", default="audit-report.json", help="Path for JSON report output")
     report_parser.add_argument("-o", "--output", default="GAME_QUALITY.md", help="Output Markdown path")
+
+    # prioritize command
+    prio_parser = subparsers.add_parser("prioritize", help="Compute prioritized remediation backlog")
+    prio_parser.add_argument("path", nargs="?", default=".", help="Target game directory")
+    prio_parser.add_argument("--report", default=None, help="Path to existing audit-report.json")
+    prio_parser.add_argument("-o", "--output", default="quality-backlog.json", help="Output JSON backlog path")
+
+    # prove command
+    prove_parser = subparsers.add_parser("prove", help="Compare before/after reports and verify improvement hypotheses")
+    prove_parser.add_argument("--before", required=True, help="Path to before audit-report.json")
+    prove_parser.add_argument("--after", required=True, help="Path to after audit-report.json")
+    prove_parser.add_argument("--hypothesis", default=None, help="Path to hypothesis.json")
+    prove_parser.add_argument("-o", "--output", default="PROVE_IMPROVEMENTS.md", help="Output Markdown path")
 
     # verify command
     verify_parser = subparsers.add_parser("verify", help="Run automated test suite and verification gates")
@@ -62,12 +82,58 @@ def main():
         sys.exit(subprocess.call(cmd))
 
     elif args.command == "report":
-        cmd = [sys.executable, str(tools_dir / "report"), args.path, "-o", args.output]
+        cmd = [sys.executable, str(tools_dir / "report"), args.path, "-o", args.output, "--json-out", args.json_out]
         if args.profile:
             cmd.extend(["--profile", args.profile])
         if args.catalog:
             cmd.extend(["--catalog", args.catalog])
+        if args.mech_in:
+            cmd.extend(["--mech-in", args.mech_in])
         sys.exit(subprocess.call(cmd))
+
+    elif args.command == "prioritize":
+        target = Path(args.path).resolve()
+        report_file = Path(args.report) if args.report else (target / "audit-report.json")
+        if not report_file.exists():
+            print("No audit-report.json found; generating report first...")
+            subprocess.call([sys.executable, str(tools_dir / "report"), str(target)])
+            report_file = target / "audit-report.json"
+
+        report_data = load_json(report_file)
+        backlog = generate_backlog(report_data)
+        out_path = Path(args.output)
+        if not out_path.is_absolute():
+            out_path = target / out_path
+        save_json(backlog, out_path)
+        print(f"Prioritized quality backlog written to: {out_path}")
+        print(f"Total actionable tasks: {len(backlog.get('tasks', []))}")
+        if backlog.get("tasks"):
+            top = backlog["tasks"][0]
+            print(f"Top Priority Task: [{top['priority_score']:.1f}] {top['title']} (Capability: {top['capability_id']})")
+        sys.exit(0)
+
+    elif args.command == "prove":
+        before_file = Path(args.before).resolve()
+        after_file = Path(args.after).resolve()
+        if not before_file.exists() or not after_file.exists():
+            print("Error: Both --before and --after audit-report.json files must exist", file=sys.stderr)
+            sys.exit(1)
+
+        before_data = load_json(before_file)
+        after_data = load_json(after_file)
+        hyp_data = load_json(Path(args.hypothesis).resolve()) if args.hypothesis and Path(args.hypothesis).exists() else None
+
+        diff_result = evaluate_diff(before_data, after_data, hyp_data)
+        md_text = render_diff_markdown(diff_result)
+        out_path = Path(args.output).resolve()
+        out_path.write_text(md_text, encoding="utf-8")
+        print(f"Diff evaluation report written to: {out_path}")
+        print(f"\n================ DIFF VERDICT ================")
+        print(f"Verdict: {diff_result['verdict']}")
+        print(f"Reason:  {diff_result['reason']}")
+        print(f"Average Delta: {diff_result['average_delta']:+.2f}")
+        print(f"==============================================\n")
+        sys.exit(0 if diff_result["verdict"] == "ACCEPTED" else 1)
 
     elif args.command == "visual-qa":
         cmd = [sys.executable, str(tools_dir / "visual-qa" / "cli.py"), args.path]
@@ -83,33 +149,149 @@ def main():
 
     elif args.command == "verify":
         target = Path(args.path).resolve()
-        print(f"Executing complete verification on: {target}")
+        print(f"Executing profile-driven verification on: {target}")
         
-        # 1. Run probe
-        print("\n--- [1/5] Running Project Probe ---")
+        mechanical_results = {}
+        
+        # 1. Run probe (or load existing profile)
+        print("\n--- [1/6] Running Project Probe ---")
         p_res = subprocess.call([sys.executable, str(tools_dir / "project-probe"), str(target)])
+        profile_path = target / "game-profile.json"
+        profile = load_json(profile_path) if profile_path.exists() else {}
+
+        # 2. Native Build & Test Execution
+        print("\n--- [2/6] Executing Native Project Build & Tests ---")
+        tooling = profile.get("tooling", {})
+        build_cmd = tooling.get("build_cmd")
+        test_cmd = tooling.get("test_cmd")
         
-        # 2. Run asset audit
-        print("\n--- [2/5] Running Asset Audit ---")
+        # Check package.json if present
+        pkg_file = target / "package.json"
+        if pkg_file.exists():
+            try:
+                pkg_data = json.loads(pkg_file.read_text(encoding="utf-8"))
+                scripts = pkg_data.get("scripts", {})
+                if not build_cmd and "build" in scripts:
+                    build_cmd = "npm run build"
+                if not test_cmd and "test" in scripts and "no test specified" not in scripts.get("test", ""):
+                    test_cmd = "npm test"
+            except Exception:
+                pass
+
+        # Execute build command if present
+        if build_cmd:
+            print(f"Running build command: '{build_cmd}'...")
+            b_res = subprocess.call(build_cmd, shell=True, cwd=str(target))
+            if b_res == 0:
+                print("  [PASS] Project build completed cleanly.")
+                mechanical_results["build"] = {
+                    "status": "PASS",
+                    "command": build_cmd,
+                    "exit_code": 0,
+                    "evidence": f"Command '{build_cmd}' exited with code 0"
+                }
+            else:
+                print(f"  [FAIL] Project build failed with exit code {b_res}", file=sys.stderr)
+                mechanical_results["build"] = {
+                    "status": "FAIL",
+                    "command": build_cmd,
+                    "exit_code": b_res,
+                    "evidence": f"Command '{build_cmd}' failed with code {b_res}"
+                }
+        else:
+            print("  [UNVERIFIED] No build command declared or detected in project.")
+            mechanical_results["build"] = {
+                "status": "UNVERIFIED",
+                "command": "",
+                "exit_code": -1,
+                "evidence": "No build command declared or detected in project"
+            }
+
+        # Execute test command if present
+        if test_cmd:
+            print(f"Running test suite: '{test_cmd}'...")
+            t_res = subprocess.call(test_cmd, shell=True, cwd=str(target))
+            if t_res == 0:
+                print("  [PASS] Project test suite completed cleanly.")
+                mechanical_results["tests"] = {
+                    "status": "PASS",
+                    "command": test_cmd,
+                    "passed": 1,
+                    "total": 1,
+                    "evidence": f"Command '{test_cmd}' exited with code 0"
+                }
+            else:
+                print(f"  [FAIL] Project test suite failed with exit code {t_res}", file=sys.stderr)
+                mechanical_results["tests"] = {
+                    "status": "FAIL",
+                    "command": test_cmd,
+                    "passed": 0,
+                    "total": 1,
+                    "evidence": f"Command '{test_cmd}' failed with code {t_res}"
+                }
+        else:
+            print("  [UNVERIFIED] No unit/gameplay test suite configured in project.")
+            mechanical_results["tests"] = {
+                "status": "UNVERIFIED",
+                "command": "",
+                "passed": 0,
+                "total": 0,
+                "evidence": "No unit/gameplay test suite configured in project"
+            }
+
+        # 3. Backend QA if applicable
+        backend_mode = profile.get("backend", {}).get("mode", "none")
+        has_django = (target / "manage.py").exists()
+        has_cf = (target / "wrangler.jsonc").exists() or (target / "wrangler.toml").exists()
+        
+        if backend_mode != "none" or has_django or has_cf:
+            print("\n--- [3/6] Running Backend & Cloudflare QA ---")
+            subprocess.call([sys.executable, str(tools_dir / "backend-qa" / "cli.py"), str(target)])
+        else:
+            print("\n--- [3/6] Backend QA: Skipped (Client-only game) ---")
+
+        # 4. Asset Audit
+        print("\n--- [4/6] Running Asset Audit ---")
         a_res = subprocess.call([sys.executable, str(tools_dir / "asset-audit"), str(target)])
         
-        # 3. Run visual QA
-        print("\n--- [3/5] Running Visual QA ---")
+        # 5. Visual QA & Runtime QA
+        print("\n--- [5/6] Running Visual & Runtime QA ---")
         v_res = subprocess.call([sys.executable, str(tools_dir / "visual-qa" / "cli.py"), str(target)])
-
-        # 4. Run runtime QA
-        print("\n--- [4/5] Running Runtime QA ---")
         rt_res = subprocess.call([sys.executable, str(tools_dir / "runtime-qa" / "cli.py"), str(target)])
 
-        # 5. Run report
-        print("\n--- [5/5] Evaluating Quality Contract ---")
-        r_res = subprocess.call([sys.executable, str(tools_dir / "report"), str(target)])
+        # Save mechanical results for report generator
+        mech_file = target / ".mechanical-results.json"
+        save_json(mechanical_results, mech_file)
+
+        # 6. Evaluate Quality Contract & Generate Report
+        print("\n--- [6/6] Evaluating Quality Contract & Gates ---")
+        r_res = subprocess.call([
+            sys.executable, str(tools_dir / "report"),
+            str(target),
+            "--mech-in", str(mech_file)
+        ])
         
-        if p_res == 0 and a_res == 0 and v_res == 0 and rt_res == 0 and r_res == 0:
-            print("\nVerification completed successfully.")
-            sys.exit(0)
+        # Check generated audit report
+        report_file = target / "audit-report.json"
+        if report_file.exists():
+            final_report = load_json(report_file)
+            failed_blockers = [b for b in final_report.get("hard_blockers", []) if b["status"] == "FAIL"]
+            unverified_blockers = [b for b in final_report.get("hard_blockers", []) if b["status"] == "UNVERIFIED"]
+            
+            if failed_blockers:
+                print(f"\nVerification FAILED: {len(failed_blockers)} Hard Release Blocker(s) detected:", file=sys.stderr)
+                for fb in failed_blockers:
+                    print(f"  - [{fb['id']}] {fb['name']}: {fb['evidence']}", file=sys.stderr)
+                sys.exit(1)
+            elif unverified_blockers:
+                print(f"\nVerification completed with WARNING: {len(unverified_blockers)} blocker(s) UNVERIFIED.")
+                print(f"Project achieved release tier: {final_report.get('release_tier_achieved')} (Cannot reach GOLD until unverified checks are tested).")
+                sys.exit(0)
+            else:
+                print(f"\nVerification PASSED: 0 blockers, Release Tier: {final_report.get('release_tier_achieved')}")
+                sys.exit(0)
         else:
-            print("\nVerification encountered issues.", file=sys.stderr)
+            print("\nVerification encountered issues generating audit report.", file=sys.stderr)
             sys.exit(1)
 
 

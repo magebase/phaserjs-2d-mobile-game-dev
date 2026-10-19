@@ -12,6 +12,7 @@
     "language": "javascript",
     "bundler": "vite",
     "package_manager": "npm",
+    "genre": "general_2d",
     "repo_root": "."
   },
   "mobile": {
